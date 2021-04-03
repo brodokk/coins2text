@@ -24,10 +24,22 @@ coin_objs = {}
 class Coin():
 
     def __init__(self, name, rate=0):
-        self.rate = rate
+        self._rate = rate
         self.name = name
 
-@scheduler.task('interval', id='do_job_1', minutes=10)
+    @property
+    def rate(self):
+        if self.name == 'bitcoin':
+            return "{:.2f}".format(float(self._rate)).replace('.00', '')
+        if self.name == 'ncr' or self.name == 'dogecoin' or self.name == 'cardano':
+            return "{:.4f}".format(float(self._rate))
+        return self._rate
+
+    @rate.setter
+    def rate(self, value):
+        self._rate = value
+
+@scheduler.task('interval', id='do_job_1', seconds=10)
 def coins_update():
     global coin_objs
     for name, coin in coin_objs.items():
@@ -41,13 +53,11 @@ def coins_update():
             results = results.find('span')
             rate = results.text
             rate = rate.replace('~', '')
-            rate = rate.replace('$', '')
-            coin.rate = "{:.2f}".format(float(rate)).replace('.00', '')
+            coin.rate = rate.replace('$', '')
         else:
             rate = cg.get_price(ids=coin.name, vs_currencies='usd')
             if rate:
-                rate = rate[coin.name]['usd']
-                coin.rate = "{:.2f}".format(float(rate)).replace('.00', '')
+                coin.rate = rate[coin.name]['usd']
 
 @app.route('/price')
 def price():
