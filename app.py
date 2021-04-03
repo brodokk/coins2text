@@ -39,7 +39,7 @@ class Coin():
     def rate(self, value):
         self._rate = value
 
-@scheduler.task('interval', id='do_job_1', seconds=10)
+@scheduler.task('interval', id='do_job_1', minutes=5)
 def coins_update():
     global coin_objs
     for name, coin in coin_objs.items():
