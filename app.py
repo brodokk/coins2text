@@ -41,11 +41,13 @@ def coins_update():
             results = results.find('span')
             rate = results.text
             rate = rate.replace('~', '')
-            coin.rate = rate.replace('$', '')
+            rate = rate.replace('$', '')
+            coin.rate = "{:.2f}".format(float(rate)).replace('.00', '')
         else:
             rate = cg.get_price(ids=coin.name, vs_currencies='usd')
             if rate:
-                coin.rate = rate[coin.name]['usd']
+                rate = rate[coin.name]['usd']
+                coin.rate = "{:.2f}".format(float(rate)).replace('.00', '')
 
 @app.route('/price')
 def price():
