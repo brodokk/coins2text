@@ -2,6 +2,10 @@
 
 A simple app to make parsing easier on NeosVR of cryptocurrencies values.
 
+## Requirements
+
+Python 3
+
 ## Installation
 
 `pip install -r requirements.txt`
