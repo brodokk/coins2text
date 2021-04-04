@@ -65,9 +65,13 @@ def price():
     if coins:
         coins = request.args.get('coins').split(',')
     global coin_objs
+    update_needed = False
     for coin in coins:
         if coin not in coin_objs:
+            update_needed = True
             coin_objs[coin] = Coin(coin)
+    if update_needed:
+        scheduler.run_job('do_job_1')
     data = ''
     for coin in coins:
         if coin in coin_objs:
