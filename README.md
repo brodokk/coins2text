@@ -1,6 +1,6 @@
 # Coins2text
 
-A simple app to make parsing easier on NeosVR of cryptocurries values.
+A simple app to make parsing easier on NeosVR of cryptocurrencies values.
 
 ## Installation
 
