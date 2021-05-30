@@ -1,6 +1,7 @@
 #!/bin/python
 
 import requests
+import logging
 from pycoingecko import CoinGeckoAPI
 from bs4 import BeautifulSoup
 
@@ -44,16 +45,18 @@ def coins_update():
     global coin_objs
     for name, coin in coin_objs.items():
         if name == 'ncr':
-            # TODO: clear this shit!
-            url = 'https://neos.com/'
-            page = requests.get(url)
-            soup = BeautifulSoup(page.content, 'html.parser')
-            results = soup.find(id='ico')
-            results = results.find('h4')
-            results = results.find('span')
-            rate = results.text
-            rate = rate.replace('~', '')
-            coin.rate = rate.replace('$', '')
+            try:
+                # TODO: clear this shit!
+                url = 'https://neos.com/'
+                page = requests.get(url)
+                soup = BeautifulSoup(page.content, 'html.parser')
+                results = soup.find(id='ico')
+                results = results.find('h4')
+                rate = results.text
+                rate = rate.replace('~', '')
+                coin.rate = rate.replace('$', '')
+            except Exception as error:
+                logging.error(error)
         else:
             rate = cg.get_price(ids=coin.name, vs_currencies='usd')
             if rate:
