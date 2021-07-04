@@ -1,7 +1,7 @@
 #!/bin/python
 
 import requests
-import logging
+import json
 from pycoingecko import CoinGeckoAPI
 from bs4 import BeautifulSoup
 
@@ -40,23 +40,20 @@ class Coin():
     def rate(self, value):
         self._rate = value
 
-@scheduler.task('interval', id='do_job_1', minutes=5)
+@scheduler.task('interval', id='do_job_1', seconds=5)
 def coins_update():
     global coin_objs
     for name, coin in coin_objs.items():
         if name == 'ncr':
-            try:
-                # TODO: clear this shit!
-                url = 'https://neos.com/'
-                page = requests.get(url)
-                soup = BeautifulSoup(page.content, 'html.parser')
-                results = soup.find(id='ico')
-                results = results.find('h4')
-                rate = results.text
-                rate = rate.replace('~', '')
-                coin.rate = rate.replace('$', '')
-            except Exception as error:
-                logging.error(error)
+            url = 'https://www.neosvr-api.com/api/globalvars/NCR_CONVERSION'
+            data = requests.get(url)
+            if data:
+                try:
+                    data_json = data.json()
+                    if 'value' in data_json:
+                        coin.rate = data_json['value']
+                except json.JSONDecodeError:
+                    pass
         else:
             rate = cg.get_price(ids=coin.name, vs_currencies='usd')
             if rate:
