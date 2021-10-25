@@ -2,8 +2,10 @@
 
 A simple app to make parsing easier on NeosVR of cryptocurrencies values.
 
-A NeosVR client is available here: `not published yet` and a server is
-currently running at: https://coins2txt.neos.spacealicorn.network.
+A NeosVR client is available here:
+`neosrec:///U-brodokk/R-7a03a6ff-36ac-4630-b193-4e6c93c21c01` in the folder
+`systems > coins2txt` and a server is currently running at:
+https://coins2txt.neos.spacealicorn.network.
 
 The ticket system handle both server and NeosVR client issues.
 
