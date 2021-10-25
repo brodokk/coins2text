@@ -19,6 +19,12 @@ Python 3
 
 For run the app just use `python app.py`
 
+```
+parser = argparse.ArgumentParser()
+    parser.add_argument('--port', type=int, default=5000)
+    args = parser.parse_args()
+```
+
 The api used is https://www.coingecko.com except for the NCR value for the
 moment who is parsed directly from the NeosVR website.
 
