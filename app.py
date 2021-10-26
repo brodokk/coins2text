@@ -42,28 +42,28 @@ class Coin():
     def rate(self, value):
         self._rate = value
 
-@scheduler.task('interval', id='do_job_1', seconds=5, max_instances=20)
-def coins_update():
+def coins_update(name):
     global coin_objs
-    for name, coin in coin_objs.items():
-        if name in banned_coin:
-            continue
-        if name == 'ncr':
-            url = 'https://www.neosvr-api.com/api/globalvars/NCR_CONVERSION'
-            data = requests.get(url)
-            if data:
-                try:
-                    data_json = data.json()
-                    if 'value' in data_json:
-                        coin.rate = data_json['value']
-                except json.JSONDecodeError:
-                    pass
+    coin = coin_objs[name]
+    if name in banned_coin:
+        scheduler.remove_job(name)
+        return
+    if name == 'ncr':
+        url = 'https://www.neosvr-api.com/api/globalvars/NCR_CONVERSION'
+        data = requests.get(url)
+        if data:
+            try:
+                data_json = data.json()
+                if 'value' in data_json:
+                    coin.rate = data_json['value']
+            except json.JSONDecodeError:
+                pass
+    else:
+        rate = cg.get_price(ids=coin.name, vs_currencies='usd')
+        if rate:
+            coin.rate = rate[coin.name]['usd']
         else:
-            rate = cg.get_price(ids=coin.name, vs_currencies='usd')
-            if rate:
-                coin.rate = rate[coin.name]['usd']
-            else:
-                banned_coin.append(name)
+            banned_coin.append(name)
 
 @app.route('/price')
 def price():
@@ -73,13 +73,12 @@ def price():
     if ',' in coins:
         coins = request.args.get('coins').split(',')
     global coin_objs
-    update_needed = False
     for coin in coins:
+        if coin in banned_coin:
+            continue
         if coin not in coin_objs:
-            update_needed = True
+            scheduler.add_job(func=coins_update, trigger='interval', id=coin, seconds=1,  max_instances=20, args=[coin])
             coin_objs[coin] = Coin(coin)
-    if update_needed:
-        scheduler.run_job('do_job_1')
     data = ''
     for coin in coins:
         if coin in coin_objs:
