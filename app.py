@@ -88,6 +88,13 @@ def price():
 
     return data.rstrip(',')
 
+@app.route('/')
+def home():
+    html = """
+    <p>A simple api to make parsing easier on NeosVR of cryptocurrencies values.</p>
+    <p>Check the source code: <a href='https://github.com/brodokk/coins2txt'>https://github.com/brodokk/coins2txt</a></p>
+    """
+    return html
 if __name__ == '__main__':
 
     app.config.from_object(Config())
