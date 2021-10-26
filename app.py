@@ -79,6 +79,8 @@ def price():
         return ''
     if ',' in coins:
         coins = request.args.get('coins').split(',')
+    else:
+        coins = [coins]
     global coin_objs
     for coin in coins:
         if coin in banned_coin:
