@@ -21,6 +21,8 @@ cg = CoinGeckoAPI()
 
 btx = 0
 
+MAX_REQUEST = 50
+
 banned_coin = []
 coin_objs = {}
 
@@ -65,6 +67,11 @@ def coins_update(name):
         else:
             banned_coin.append(name)
 
+def get_interval(nb_jobs):
+    request_available = MAX_REQUEST / nb_jobs
+    seconds_interval = (60 / request_available) + 1
+    return seconds_interval
+
 @app.route('/price')
 def price():
     coins = request.args.get('coins')
@@ -77,8 +84,18 @@ def price():
         if coin in banned_coin:
             continue
         if coin not in coin_objs:
-            scheduler.add_job(func=coins_update, trigger='interval', id=coin, seconds=1,  max_instances=20, args=[coin])
+            if len(coin_objs) == 0:
+                seconds_interval = get_interval(1)
+            else:
+                seconds_interval = get_interval(len(coin_objs))
+            seconds_interval += 1
+            scheduler.add_job(func=coins_update, trigger='interval', id=coin, seconds=seconds_interval,  max_instances=20, args=[coin])
             coin_objs[coin] = Coin(coin)
+    if len(coin_objs) > MAX_REQUEST:
+        seconds_interval = get_interval(len(coin_objs))
+        for job in scheduler.get_jobs():
+            seconds_interval += 1
+            job.reschedule(trigger='interval', seconds=seconds_interval)
     data = ''
     for coin in coins:
         if coin in coin_objs:
