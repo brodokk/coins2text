@@ -21,6 +21,7 @@ cg = CoinGeckoAPI()
 
 btx = 0
 
+banned_coin = []
 coin_objs = {}
 
 class Coin():
@@ -45,6 +46,8 @@ class Coin():
 def coins_update():
     global coin_objs
     for name, coin in coin_objs.items():
+        if name in banned_coin:
+            continue
         if name == 'ncr':
             url = 'https://www.neosvr-api.com/api/globalvars/NCR_CONVERSION'
             data = requests.get(url)
@@ -59,11 +62,15 @@ def coins_update():
             rate = cg.get_price(ids=coin.name, vs_currencies='usd')
             if rate:
                 coin.rate = rate[coin.name]['usd']
+            else:
+                banned_coin.append(name)
 
 @app.route('/price')
 def price():
     coins = request.args.get('coins')
-    if coins:
+    if not coins:
+        return ''
+    if ',' in coins:
         coins = request.args.get('coins').split(',')
     global coin_objs
     update_needed = False
