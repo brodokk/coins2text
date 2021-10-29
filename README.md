@@ -37,3 +37,11 @@ parameter. Usage example with curl:
 > curl https://coins2txt.neos.spacealicorn.network/price?coins=bitcoin,polkadot,cardano,ncr,ethereum,dogecoin
 63632,43.75,2.16,0.2382318316,4164.4,0.266408
 ```
+
+## About NCR and Neos credits
+
+There is a special coins name that you can use for getting the minting price
+of NCR in USD directly from the neos website its `ncr`. But the value is also
+available on coingecko with the name `neos-credits`. The value of the last
+one will be more real time than the first one who is manually updated after
+every batch on (NeosVR official website)[https://neos.com/].
