@@ -51,15 +51,18 @@ def coins_update(name):
         scheduler.remove_job(name)
         return
     if name == 'ncr':
-        url = 'https://www.neosvr-api.com/api/globalvars/NCR_CONVERSION'
-        data = requests.get(url)
-        if data:
             try:
-                data_json = data.json()
-                if 'value' in data_json:
-                    coin.rate = data_json['value']
-            except json.JSONDecodeError:
-                pass
+                # TODO: clear this shit! Well this is shit BUT the website is more up to date now that the API...
+                url = 'https://neos.com/'
+                page = requests.get(url)
+                soup = BeautifulSoup(page.content, 'html.parser')
+                results = soup.find(id='ico')
+                results = results.find('h4')
+                rate = results.text
+                rate = rate.replace('~', '')
+                coin.rate = rate.replace('$', '')
+            except Exception as error:
+                logging.error(error)
     else:
         rate = cg.get_price(ids=coin.name, vs_currencies='usd')
         if rate:
