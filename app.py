@@ -3,6 +3,7 @@
 import requests
 import json
 import argparse
+import logging
 from pycoingecko import CoinGeckoAPI
 from bs4 import BeautifulSoup
 
@@ -59,8 +60,10 @@ def coins_update(name):
                 results = soup.find(id='ico')
                 results = results.find('h4')
                 rate = results.text
+                rate = rate.replace(' ', '')
                 rate = rate.replace('~', '')
-                coin.rate = rate.replace('$', '')
+                rate = rate.replace('$', '')
+                coin.rate = rate.strip()
             except Exception as error:
                 logging.error(error)
     else:
